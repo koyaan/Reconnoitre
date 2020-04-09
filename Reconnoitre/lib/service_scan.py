@@ -50,16 +50,16 @@ def nmap_scan(
         print("[+] Starting detailed TCP%s nmap scans for %s" % (
             ("" if no_udp_service_scan is True else "/UDP"), ip_address))
         flags = get_config_options("nmap", "tcpscan")
-        TCPSCAN = f"nmap {flags} -oN\
-        '{output_directory}/{ip_address}.nmap' -oX\
-        '{output_directory}/{ip_address}_nmap_scan_import.xml' {ip_address}"
+        TCPSCAN = f"nmap {flags} -oA\
+        '{output_directory}/{ip_address}.full' {ip_address}"
 
         flags = get_config_options("nmap", "udpscan")
         UDPSCAN = f"nmap {flags} {ip_address} -oA '{output_directory}/{ip_address}-udp'"
 
-    udpresult = "" if no_udp_service_scan is True else run_scan(UDPSCAN)
     tcpresults = run_scan(TCPSCAN)
-
+    print("[+] TCP scan completed - writing recommendations")
+    write_recommendations(tcpresults, ip_address, output_directory)
+    udpresult = "" if no_udp_service_scan is True else run_scan(UDPSCAN)
     write_recommendations(tcpresults + udpresult, ip_address, output_directory)
     print("[*] TCP%s scans completed for %s" %
           (("" if no_udp_service_scan is True else "/UDP"), ip_address))

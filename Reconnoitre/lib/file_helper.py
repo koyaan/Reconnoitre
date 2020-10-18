@@ -121,17 +121,17 @@ def write_recommendations(results, ip_address, outputdir):
                 for port in ports:
                     port = port.split("/")[0]
 
-                    description = ("[*] "
+                    description = ("#### "
                                    + j["services"][service]["description"])
                     print(description % {"ip": ip_address, "port": port})
                     f.write((description + "\n") %
                             {"ip": ip_address, "port": port})
 
                     for entry in j["services"][service]["output"]:
-                        f.write("   [*] " + entry["description"] + "\n")
+                        f.write("- [ ] " + entry["description"] + "\n")
 
                         for cmd in entry["commands"]:
-                            f.write(("      [=] " + cmd + "\n") %
+                            f.write(("- [ ] " + cmd + "\n") %
                                     {"ip": ip_address,
                                      "port": port,
                                      "outputdir": outputdir})

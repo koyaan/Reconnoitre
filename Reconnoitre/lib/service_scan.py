@@ -25,6 +25,13 @@ def nmap_scan(
     write_recommendations(quickresults, ip_address, output_directory)
     print("[*] TCP quick scans completed for %s" % ip_address)
 
+
+    print("[+] Starting quick nmap udp scan for %s" % (ip_address))
+    udquickflags = get_config_options('nmap', 'udpquickscan')
+    UDPQUICKSCAN = f"nmap {udquickflags} {ip_address} -oA '{output_directory}/{ip_address}-udp.quick'"
+    udwquickresults = run_scan(UDPQUICKSCAN)
+    print("[*] UDP quick scan completed for %s" % ip_address)
+
     if (quick):
         return
 

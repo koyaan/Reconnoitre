@@ -2,8 +2,9 @@
     "nmap": {
         "tcpscan": "-vv -Pn --disable-arp-ping -sS -A -sC -p- -T 3 -script-args=unsafe=1",
         "quickscan": "-sC -sV -Pn --disable-arp-ping",
+        "udpquickscan": "-vv -Pn --disable-arp-ping  -sC -sV -sU -T 3 --top-ports 10",
         "dnsudpscan": "-vv -Pn --disable-arp-ping -A -sC -sU -T 4 --top-ports 200 --max-retries 0",
-        "udpscan": "-sC -sV -sU -Pn --disable-arp-ping"
+        "udpscan": "-sC -sV -sU -Pn --top-ports 1000 --disable-arp-ping"
     },
     "services": {
         "http/s": {
@@ -18,7 +19,7 @@
                 {
                     "description": "Enumeration",
                     "commands": [
-                        "nikto -h $ip -p $port -output $outputdir/$ip_$port_nikto.txt",
+                        "nikto -h $ip -port $port -output $outputdir/$ip_$port_nikto.txt",
                         "curl -i $ip:$port",
                         "w3m -dump $ip/robots.txt | tee $outputdir/$ip_$port_robots.txt",
                         "VHostScan -t $ip -oN $outputdir/$ip_$port_vhosts.txt"
@@ -35,9 +36,10 @@
                 {
                     "description": "Enumeration",
                     "commands": [
+                        "dirb http://$ip:$port/ -o $outputdir/$ip_$port_dirb.txt",
                         "gobuster dir -w /usr/share/seclists/Discovery/Web-Content/common.txt -u http://$ip:$port/ -s '200,204,301,302,307,403,500' -e | tee '$outputdir/$ip_$port_gobuster_common.txt'",
                         "gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt -u http://$ip:$port/ -s '200,204,301,302,307,403,500' -e | tee '$outputdir/$ip_$port_gobuster_medium.txt'",
-                        "gobuster dir -w /usr/share/seclists/Discovery/Web-Content/CGIs.txt -u http://$ip:$port/ -s '200,204,301,307,403,500' -e | tee '$outputdir/$ip_$port_gobuster_cgis.txt'"
+                        "gobuster dir  -w /usr/share/seclists/Discovery/Web-Content/CGIs.txt -u http://$ip:$port/ -s '200,204,301,307,403,500' -e | tee '$outputdir/$ip_$port_gobuster_cgis.txt'"
                     ]
                 }
             ]
@@ -53,8 +55,9 @@
                 {
                     "description": "Enumeration",
                     "commands": [
+                        "dirb https://$ip:$port/ -o $outputdir/$ip_$port_dirb.txt",
                         "gobuster dir -k -w /usr/share/seclists/Discovery/Web-Content/common.txt -u https://$ip:$port/ -s '200,204,301,302,307,403,500' -e | tee '$outputdir/$ip_$port_gobuster_common.txt'",
-                        "gobuster dir -k -w /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt -u https://$ip:$port/ -s '200,204,301,302,307,403,500' -e | tee '$outputdir/$ip_$port_gobuster_medium.txt'",
+                        "gobuster dir -k -w  /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt -u https://$ip:$port/ -s '200,204,301,307,403,500' -e | tee '$outputdir/$ip_$port_gobuster_medium.txt'",
                         "gobuster dir -k -w /usr/share/seclists/Discovery/Web-Content/CGIs.txt -u https://$ip:$port/ -s '200,204,301,307,403,500' -e | tee '$outputdir/$ip_$port_gobuster_cgis.txt'"
                     ]
                 }
@@ -113,7 +116,8 @@
                 {
                     "description": "Check out the server for web applications with sqli vulnerabilities",
                     "commands": [
-                        "searchsploit mssql"
+                        "searchsploit mssql",
+                        "sqsh -S $ip -U sa -P 'Password123' -D master"
                     ]
                 },
                 {
@@ -255,9 +259,12 @@
                     "commands": [
                         "nmblookup -A $ip",
                         "smbclient //MOUNT/share -I $ip N",
-                        "smbclient -L //$ip",
+                        "smbclient --no-pass -L //$ip",
+                        "smbmap -u \"\" -p \"\" -P $port -H $ip",
+                        "smbmap -u \"guest\" -p \"\" -P $port -H $ip",
                         "enum4linux -a $ip",
-                        "rpcclient -U \"\" $ip"
+                        "rpcclient -U \"\" $ip",
+                        "crackmapexec smb $ip --pass-pol -u '' -p ''"
                     ]
                 }
             ]

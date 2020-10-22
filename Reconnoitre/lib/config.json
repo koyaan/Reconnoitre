@@ -2,7 +2,7 @@
     "nmap": {
         "tcpscan": "-vv -Pn --disable-arp-ping -sS -A -sC -p- -T 3 -script-args=unsafe=1",
         "quickscan": "-sC -sV -Pn --disable-arp-ping",
-        "udpquickscan": "-vv -Pn --disable-arp-ping  -sC -sV -sU -T 3 --top-ports 10",
+        "udpquickscan": "-vv -Pn --disable-arp-ping  -sC -sV -sU -T 3 --top-ports 20",
         "dnsudpscan": "-vv -Pn --disable-arp-ping -A -sC -sU -T 4 --top-ports 200 --max-retries 0",
         "udpscan": "-sC -sV -sU -Pn --top-ports 1000 --disable-arp-ping"
     },
@@ -39,7 +39,7 @@
                         "dirb http://$ip:$port/ -o $outputdir/$ip_$port_dirb.txt",
                         "gobuster dir -w /usr/share/seclists/Discovery/Web-Content/common.txt -u http://$ip:$port/ -s '200,204,301,302,307,403,500' -e | tee '$outputdir/$ip_$port_gobuster_common.txt'",
                         "gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt -u http://$ip:$port/ -s '200,204,301,302,307,403,500' -e | tee '$outputdir/$ip_$port_gobuster_medium.txt'",
-                        "gobuster dir  -w /usr/share/seclists/Discovery/Web-Content/CGIs.txt -u http://$ip:$port/ -s '200,204,301,307,403,500' -e | tee '$outputdir/$ip_$port_gobuster_cgis.txt'"
+                        "gobuster dir -w /usr/share/seclists/Discovery/Web-Content/CGIs.txt -u http://$ip:$port/ -s '200,204,301,307,403,500' -e | tee '$outputdir/$ip_$port_gobuster_cgis.txt'"
                     ]
                 }
             ]
